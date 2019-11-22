@@ -1,0 +1,14 @@
+{
+  "name": "testdbconnection",
+  "version": "1.0.0",
+  "description": "Sample lambda that creates a DB connection using credentials from the environment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alexander Hicks",
+  "license": "ISC",
+  "dependencies": {
+    "pg": "^7.12.1"
+  }
+}
