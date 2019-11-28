@@ -8,7 +8,17 @@ const pool = new pg.Pool({
     connectionTimeoutMillis: 10000
 });
 
+const deleteQueryText = `DELETE FROM public."Chord"
+WHERE "pinID" = $1 AND "uID" = $2;`
+
+const updateQueryText = `UPDATE public."Chord"
+SET longitude=$3, latitude=$4, permission=$5, "tID"=$6
+WHERE "pinID" = $1 AND "uID" = $2;`
+
 exports.handler = async (event, context) => {
+
+  console.log(event);
+  console.log(context);
 
   // https://github.com/brianc/node-postgres/issues/930#issuecomment-230362178
   context.callbackWaitsForEmptyEventLoop = false; // !important to reuse pool
@@ -16,20 +26,45 @@ exports.handler = async (event, context) => {
   const client = await pool.connect();
   console.log('DB Connected')
 
-  
-  //const client = await pool.connect();
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify('Hello from Lambda!'),
-  };
-  try {
-    const r = await client.query('SELECT * FROM public."Song"');
-    console.log(r);
-    response.body = JSON.stringify(r);
-  } finally {
-    // https://github.com/brianc/node-postgres/issues/1180#issuecomment-270589769
-    client.release(true);
+
+  console.log(event);
+  console.log(context);
+
+  const pinID = event.pathParameters['chord-id'];
+  const userID = event.requestContext.authorizer.claims.sub;
+  const closeAndReturn = (client, response) => {
+    //client.release(true);
+    return response;
   }
-  
-  return response;
+  //TODO: Paginate!
+  try {
+    switch (event.httpMethod) {
+      case 'POST':
+        const {latitude, longitude, permission, tID} = JSON.parse(event.body);
+        await client.query({
+          text: updateQueryText,
+          values: [pinID, userID, longitude, latitude, permission, tID]
+        });
+        return closeAndReturn(client, {
+          statusCode: 200,
+          body: 'updated'
+        });
+      case 'DELETE':
+        const response = await client.query({
+          text: deleteQueryText,
+          values: [pinID,userID]
+        })
+        return closeAndReturn(client, {
+          statusCode: 300,
+          body: 'deleted',
+        });
+      default:
+          return closeAndReturn(client, {
+            statusCode: 405,
+            body: `${event.resource} doesn't support method ${event.httpMethod}`
+          });
+    }
+  } finally {
+    client.release(true);
+  } 
 };
