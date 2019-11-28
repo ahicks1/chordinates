@@ -80,7 +80,8 @@ exports.handler = async (event) => {
   if (idMatch == null) return badRequest();
   const songID = idMatch[1];
   const songInfo = await getSongInformation(songID)
-
+  console.log(songInfo);
   const lambdaPayload = JSON.stringify({...event, songInfo: songInfo});
-  return await invokeLambdaPromise('APIChordsFunction', lambdaPayload);
+  const lambdaResponse = await invokeLambdaPromise('APIChordsFunction', lambdaPayload);
+  return JSON.parse(lambdaResponse);
 };

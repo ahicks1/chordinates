@@ -14,6 +14,21 @@ s."name" as songname, "artist", "genre"
 FROM public."Chord" as c, public."Time" as t, public."Song" as s 
 WHERE t."tID" = c."tID" AND s."sID" = c."sID" AND "uID" = $1;`;
 
+const addSongQueryText = `INSERT INTO public."Song"(url, name, artist, genre)
+VALUES ($1, $2, $3, $4);`
+
+const getSongIdQueryText = `SELECT "sID"
+FROM public."Song"
+WHERE url = $1;`
+
+const checkSongExistsQueryText = `SELECT EXISTS (
+  SELECT url FROM public."Song" WHERE url = $1
+)`;
+
+const addNewChordQueryText = `INSERT INTO public."Chord"(longitude, latitude, 
+  permission, "uID", "tID", "sID")
+VALUES ($1, $2, $3, $4, $5, $6);`
+
 const dummyUUID = '103c946d-ef98-42c1-b0be-cc815818c405';
 
 const getChordsForUser = async (client, userID = dummyUUID) => {
@@ -25,13 +40,55 @@ const getChordsForUser = async (client, userID = dummyUUID) => {
   return response.rows;
 }
 
-const addChordForUser = async (client, longitude, latitude, permission, timeId, songURL) => {
+const getOrInsertSong = async (client, {artist, title, album, id}) => {
+  if(!id) throw new Error('No id provided');
+  //Check if song exists in databse
+  const existResponse = await client.query({
+    text: checkSongExistsQueryText,
+    values: [`https://open.spotify.com/track/${id}`],
+  });
+
+  console.log('Exist response');
+  console.log(existResponse);
+
+  //Insert if not
+  if (existResponse.rows.length > 0 && !existResponse.rows[0].exists) {
+    console.log('No song, so adding');
+    const addResponse = await client.query({
+      text: addSongQueryText,
+      values: [`https://open.spotify.com/track/${id}`, title, artist, album],
+    })
+    console.log('Add response');
+    console.log(addResponse);
+    
+  }
+
+  //Get song id
+  const songIdResponse = await client.query({
+    text: getSongIdQueryText,
+    values: [`https://open.spotify.com/track/${id}`],
+  })
+  console.log('get songID response');
+  console.log(songIdResponse);
+  return songIdResponse.rows[0].sID;
+  
+
+}
+
+const addChordForUser = async (
+    client, 
+    longitude, 
+    latitude, 
+    permission, 
+    userId,
+    timeId, 
+    songId) => {
   const query = {
-    text:getQueryText,
-    values: [userID],
+    text: addNewChordQueryText,
+    values: [longitude, latitude, permission, userId, timeId, songId ],
   }
   const response = await client.query(query);
-  return response.rows;
+  return response;
 }
 
 const closeAndReturn = (client, response) => {
@@ -61,8 +118,32 @@ exports.handler = async (event, context) => {
           statusCode: 200,
           body: JSON.stringify({chords: rows})
         });
-      // case 'POST':
-      //   break;
+      case 'POST':
+        if(!event.songInfo || !event.songInfo.title) {
+          return closeAndReturn(client, {
+            statusCode: 400, 
+            body: 'Missing song info',
+          });
+        }
+        const songID = await getOrInsertSong(client, event.songInfo);
+        console.log(songID);
+        const {latitude, longitude, permission, tID} = JSON.parse(event.body);
+        if(!(latitude && longitude && permission && tID)) return closeAndReturn(client, {
+            statusCode: 401, 
+            body: 'Malformed Query',
+          });
+        await addChordForUser(
+          client,
+          longitude,
+          latitude,
+          permission,
+          userID,
+          tID,
+          songID);
+        return closeAndReturn(client, {
+          statusCode: 300,
+          body: 'inserted',
+        });
       default:
           return closeAndReturn(client, {
             statusCode: 405,
