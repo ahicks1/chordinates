@@ -107,7 +107,7 @@ exports.handler = async (event, context) => {
   console.log(event);
   console.log(context);
 
-  const userID = event.requestContext.identity.cognitoIdentityId;
+  const userID = event.requestContext.authorizer.claims.sub;
 
   //TODO: Paginate!
   try {
@@ -153,22 +153,4 @@ exports.handler = async (event, context) => {
   } finally {
     client.release(true);
   }
-  
-
-  
-  // //const client = await pool.connect();
-  // const response = {
-  //   statusCode: 200,
-  //   body: JSON.stringify('Hello from Lambda!'),
-  // };
-  // try {
-  //   const r = await client.query('SELECT * FROM public."Song"');
-  //   console.log(r);
-  //   response.body = JSON.stringify(r);
-  // } finally {
-  //   // https://github.com/brianc/node-postgres/issues/1180#issuecomment-270589769
-  //   client.release(true);
-  // }
-  
-  // return response;
 };
