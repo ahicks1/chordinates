@@ -8,28 +8,47 @@ const pool = new pg.Pool({
     connectionTimeoutMillis: 10000
 });
 
+const getQueryText = `SELECT *
+FROM public."fullchord"
+WHERE latitude < $1::float + $3::float AND latitude > $1::float - $3::float
+AND longitude < $2::float + $3::float AND longitude > $2::float - $3::float;`;
+
+const getChordsByLocation = async (client, {lat, lon}, range, type) => {
+  const query = {
+    text:getQueryText,
+    values: [lat, lon, range],
+  }
+  const response = await client.query(query);
+  return response.rows;
+}
+
 exports.handler = async (event, context) => {
 
   // https://github.com/brianc/node-postgres/issues/930#issuecomment-230362178
   context.callbackWaitsForEmptyEventLoop = false; // !important to reuse pool
-  console.log('DB Connecting')
+  console.log('DB Connecting');
   const client = await pool.connect();
-  console.log('DB Connected')
-//testing lizzie
-  
-  //const client = await pool.connect();
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify('Hello from Lambda!'),
-  };
-  try {
-    const r = await client.query('SELECT * FROM public."Song"');
-    console.log(r);
-    response.body = JSON.stringify(r);
-  } finally {
-    // https://github.com/brianc/node-postgres/issues/1180#issuecomment-270589769
-    client.release(true);
+  console.log('DB Connected');
+
+  console.log(event);
+  console.log(context);
+
+try {
+  switch (event.httpMethod) {
+    case 'GET':
+      const {lat, lon, range=4} = event.queryStringParameters;
+      const rows = await getChordsByLocation(client, {lat:parseFloat(lat), lon:parseFloat(lon)}, parseFloat(range));
+      return {
+        statusCode: 200,
+        body: JSON.stringify({chords: rows})
+      };
+    default:
+        return {
+          statusCode: 405,
+          body: `${event.resource} doesn't support method ${event.httpMethod}`
+        };
   }
-  
-  return response;
+} finally {
+  client.release(true);
+}
 };

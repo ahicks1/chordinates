@@ -8,11 +8,9 @@ const pool = new pg.Pool({
     connectionTimeoutMillis: 10000
 });
 
-const getQueryText = `SELECT "pinID", "whenMade", "longitude", "latitude", 
-"permission", c."sID", c."tID", t."name" as timename, "start", "end", "url", 
-s."name" as songname, "artist", "genre" 
-FROM public."Chord" as c, public."Time" as t, public."Song" as s 
-WHERE t."tID" = c."tID" AND s."sID" = c."sID" AND "uID" = $1;`;
+const getQueryText = `SELECT *
+FROM public."fullchord"
+WHERE "uID" = $1;`;
 
 const addSongQueryText = `INSERT INTO public."Song"(url, name, artist, genre)
 VALUES ($1, $2, $3, $4);`
