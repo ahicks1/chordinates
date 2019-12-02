@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
         if(authData) {
             getFriends(host, authData.getSignInUserSession().accessToken.jwtToken)
             .then(json => {
-              setData(json.chords);
+              setData(json.friends);
             });
         }
       }, [authData]);
