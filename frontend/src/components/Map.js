@@ -11,8 +11,16 @@ import VectorSource from 'ol/source/Vector';
 import Point from 'ol/geom/Point'
 
 import {Circle as CircleStyle, Fill, Icon, Stroke, Style} from 'ol/style';
+import { getChordsNearLocation } from '../DataUtils';
 
-const GoogleMap = (props) => {
+const GoogleMap = ({locationChanged = () => {}}) => {
+
+  const [chordData, setChordData] = useState([]);
+  const [loadChords, setLoadChords] = useState(false);
+  if(!loadChords) {
+    setLoadChords(true);
+    getChordsNearLocation(host, token, lat, lon)
+  }
 
   const view = new View({
     center: fromLonLat([1,1 ]),
@@ -80,6 +88,7 @@ const GoogleMap = (props) => {
     });
     const id = navigator.geolocation.watchPosition((pos) => {
       console.log("got position = "+pos.coords.latitude,pos.coords.longitude)
+      locationChanged(pos.coords.latitude,pos.coords.longitude);
       view.setCenter(fromLonLat([pos.coords.longitude,pos.coords.latitude]))
       map.current.render();
       const pt = new Point(fromLonLat([pos.coords.longitude,pos.coords.latitude]))
