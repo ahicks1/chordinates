@@ -114,12 +114,14 @@ exports.handler = async (event, context) => {
         const rows = await getChordsForUser(client, userID);
         return closeAndReturn(client, {
           statusCode: 200,
+          headers: {'Access-Control-Allow-Origin':'*'},
           body: JSON.stringify({chords: rows})
         });
       case 'POST':
         if(!event.songInfo || !event.songInfo.title) {
           return closeAndReturn(client, {
             statusCode: 400, 
+            headers: {'Access-Control-Allow-Origin':'*'},
             body: 'Missing song info',
           });
         }
@@ -140,11 +142,13 @@ exports.handler = async (event, context) => {
           songID);
         return closeAndReturn(client, {
           statusCode: 300,
+          headers: {'Access-Control-Allow-Origin':'*'},
           body: 'inserted',
         });
       default:
           return closeAndReturn(client, {
             statusCode: 405,
+            headers: {'Access-Control-Allow-Origin':'*'},
             body: `${event.resource} doesn't support method ${event.httpMethod}`
           });
     }

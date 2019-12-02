@@ -39,7 +39,7 @@ import {
 } from "react-router-dom";
 import DisplayData from './components/DisplayData';
 
-const host = "obxta7h5y4.execute-api.us-east-2.amazonaws.com"
+export const host = "obxta7h5y4.execute-api.us-east-2.amazonaws.com"
 const ampTheme = {
   sectionHeader: {},
   button: { 'backgroundColor': '#8e24aa' },
@@ -194,6 +194,9 @@ function App() {
             <Route path="/users">
                Put new routes here
             </Route>
+            <Route path="/chords">
+               <MyChordsPageAuth />
+            </Route>
             <Route path="/login-code">
 
             </Route>
@@ -221,6 +224,19 @@ const FriendsPageAuth = () => {
     <div >
       My Component Here
     </div></Authenticator>
+}
+
+const MyChordsPageAuth = () => {
+  return <Authenticator hideDefault={true} theme={ampTheme}>
+      <SignIn/>
+    <SignUp/>
+    <ConfirmSignIn/>
+    <VerifyContact/>
+    <ConfirmSignUp/>
+    <ForgotPassword/>
+    <RequireNewPassword />
+      <DisplayData />
+   </Authenticator>
 }
 
 const Home = () => {
