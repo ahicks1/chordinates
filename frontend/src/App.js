@@ -1,10 +1,21 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Map from './components/Map'
-import logo from './logo.svg';
 import './App.css';
 import './components/AddButton'
 import AddButton from './components/AddButton';
+import Amplify, { Auth } from 'aws-amplify';
+import { Authenticator } from 'aws-amplify-react';
+
+import { 
+  ConfirmSignIn, 
+  ConfirmSignUp, 
+  ForgotPassword, 
+  RequireNewPassword, 
+  SignIn, 
+  VerifyContact,
+  SignUp } from 'aws-amplify-react';
+
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -17,6 +28,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+//import SignUp from './CustomSignup'
 
 import {
   BrowserRouter as Router,
@@ -24,6 +36,12 @@ import {
   Route,
   Link
 } from "react-router-dom";
+
+const ampTheme = {
+  sectionHeader: {},
+  button: { 'backgroundColor': '#8e24aa' },
+  a: {'color':'#8e24aa'}
+}
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -42,6 +60,19 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+Amplify.configure({
+  Auth: {
+      // REQUIRED - Amazon Cognito Region
+      region: 'us-east-2', 
+      // OPTIONAL - Amazon Cognito User Pool ID
+      userPoolId: 'us-east-2_AgsbUqb60',
+      // OPTIONAL - Amazon Cognito Web Client ID
+      userPoolWebClientId: '1phrfhdqqddk39u257h5mj3csj', 
+      // Manually set the authentication flow type. Default is 'USER_SRP_AUTH'
+      authenticationFlowType: 'USER_SRP_AUTH'
+  }
+});
+
 function App() {
   const classes = useStyles();
   
@@ -50,6 +81,12 @@ function App() {
   const handleChange = event => {
     //setAuth(event.target.checked);
   };
+
+  const handleSignOut = () => {
+    Auth.signOut()
+    setAnchorEl(null);
+    
+  }
 
   const handleMenu = event => {
     const currTarget = event.currentTarget;
@@ -96,7 +133,7 @@ function App() {
                 open={open}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                <MenuItem onClick={handleSignOut}>Profile</MenuItem>
                 <MenuItem onClick={handleClose}>Sign out</MenuItem>
               </Menu>
             </div>
@@ -111,6 +148,9 @@ function App() {
             <Route path="/users">
                Put new routes here
             </Route>
+            <Route path="/login-code">
+
+            </Route>
             <Route path="/">
               <Home />
             </Route>
@@ -121,10 +161,18 @@ function App() {
 }
 
 const Home = () => {
-    return <div >
+    return <Authenticator hideDefault={true} theme={ampTheme}>
+      <SignIn/>
+    <SignUp/>
+    <ConfirmSignIn/>
+    <VerifyContact/>
+    <ConfirmSignUp/>
+    <ForgotPassword/>
+    <RequireNewPassword />
+    <div >
       <Map/>
       <AddButton/>
-    </div>
+    </div></Authenticator>
 }
 
 export default App;
