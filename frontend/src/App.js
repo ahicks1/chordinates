@@ -7,14 +7,15 @@ import AddButton from './components/AddButton';
 import Amplify, { Auth } from 'aws-amplify';
 import { Authenticator } from 'aws-amplify-react';
 
-import { 
-  ConfirmSignIn, 
-  ConfirmSignUp, 
-  ForgotPassword, 
-  RequireNewPassword, 
-  SignIn, 
+import {
+  ConfirmSignIn,
+  ConfirmSignUp,
+  ForgotPassword,
+  RequireNewPassword,
+  SignIn,
   VerifyContact,
-  SignUp } from 'aws-amplify-react';
+  SignUp
+} from 'aws-amplify-react';
 
 
 import AppBar from '@material-ui/core/AppBar';
@@ -23,7 +24,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import HomeIcon  from '@material-ui/icons/Home';
+import HomeIcon from '@material-ui/icons/Home';
 import SwitchMUI from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -43,7 +44,7 @@ export const host = "obxta7h5y4.execute-api.us-east-2.amazonaws.com"
 const ampTheme = {
   sectionHeader: {},
   button: { 'backgroundColor': '#8e24aa' },
-  a: {'color':'#8e24aa'}
+  a: { 'color': '#8e24aa' }
 }
 
 const useStyles = makeStyles(theme => ({
@@ -65,29 +66,27 @@ const useStyles = makeStyles(theme => ({
 
 Amplify.configure({
   Auth: {
-      // REQUIRED - Amazon Cognito Region
-      region: 'us-east-2', 
-      // OPTIONAL - Amazon Cognito User Pool ID
-      userPoolId: 'us-east-2_AgsbUqb60',
-      // OPTIONAL - Amazon Cognito Web Client ID
-      userPoolWebClientId: '1phrfhdqqddk39u257h5mj3csj', 
-      // Manually set the authentication flow type. Default is 'USER_SRP_AUTH'
-      authenticationFlowType: 'USER_SRP_AUTH'
+    // REQUIRED - Amazon Cognito Region
+    region: 'us-east-2',
+    // OPTIONAL - Amazon Cognito User Pool ID
+    userPoolId: 'us-east-2_AgsbUqb60',
+    // OPTIONAL - Amazon Cognito Web Client ID
+    userPoolWebClientId: '1phrfhdqqddk39u257h5mj3csj',
+    // Manually set the authentication flow type. Default is 'USER_SRP_AUTH'
+    authenticationFlowType: 'USER_SRP_AUTH'
   }
 });
 
 function App() {
   const classes = useStyles();
-
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [menuChoice, setMenuChoice] = React.useState(null);
-  const openAccount = Boolean(anchorEl) && anchorEl.id==="account";
-  const openMenu = Boolean(anchorEl) && anchorEl.id==="function";
+  const openAccount = Boolean(anchorEl) && anchorEl.id === "account";
+  const openMenu = Boolean(anchorEl) && anchorEl.id === "function";
 
   const handleSignOut = () => {
     Auth.signOut()
     setAnchorEl(null);
-    
+
   }
 
   const handleMenu = event => {
@@ -99,22 +98,12 @@ function App() {
     setAnchorEl(null);
   };
 
-  const handleMenuChoice = event => {
-    console.log(event.currentTarget);
-    console.log(event.currentTarget.id);
-    setMenuChoice(event.currentTarget);
-  }
-
-  const handleMenuChoiceClose = () => {
-    setMenuChoice(null);
-  }
-
   return (
     <Router>
       <div className="App">
         <AppBar elevation={0} position="static" className={classes.bar}>
           <Toolbar>
-            <div>
+            <div id="FunctionMenu">
               <IconButton id="function" edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={handleMenu}>
                 <MenuIcon />
               </IconButton>
@@ -133,7 +122,7 @@ function App() {
                 open={openMenu}
                 onClose={handleClose}
               >
-                <MenuItem component={Link} to='/chords' onClick={handleClose}>My Pins</MenuItem>
+                <MenuItem component={Link} to='/chords' onClick={handleClose}>My Chords</MenuItem>
                 <MenuItem component={Link} to="/friends" onClick={handleClose}>My Friends</MenuItem>
                 <MenuItem component={Link} to="/history" onClick={handleClose}>My History</MenuItem>
                 <MenuItem component={Link} to="/chords/nearLocation" onClick={handleClose}>Filter View</MenuItem>
@@ -141,8 +130,8 @@ function App() {
             </div>
             <Typography variant="h6" className={classes.title}>
               Chordinates
-          </Typography>
-            <div>
+            </Typography>
+            <div id="AccountMenu">
               <IconButton
                 id="account"
                 aria-label="account of current user"
@@ -173,16 +162,16 @@ function App() {
               </Menu>
             </div>
             <IconButton
-                id="home"
-                aria-label="return to home page"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleClose}
-                component={Link} to='/'
-                color="inherit"
-              >
-                <HomeIcon />
-              </IconButton>
+              id="home"
+              aria-label="return to home page"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleClose}
+              component={Link} to='/'
+              color="inherit"
+            >
+              <HomeIcon />
+            </IconButton>
           </Toolbar>
         </AppBar>
         {/* A <Switch> looks through its children <Route>s and
@@ -191,18 +180,18 @@ function App() {
           {/* <Route path="/about">
               <About />
             </Route> */}
-            <Route path="/users">
-               Put new routes here
+          <Route path="/users">
+            Put new routes here
             </Route>
-            <Route path="/chords">
-               <MyChordsPageAuth />
-            </Route>
-            <Route path="/login-code">
+          <Route path="/chords">
+            <MyChordsPageAuth />
+          </Route>
+          <Route path="/login-code">
 
-            </Route>
-            <Route path="/friends">
-              <FriendsPageAuth/>
-            </Route>
+          </Route>
+          <Route path="/friends">
+            <FriendsPageAuth />
+          </Route>
           <Route path="/">
             <Home />
           </Route>
@@ -214,12 +203,12 @@ function App() {
 
 const FriendsPageAuth = () => {
   return <Authenticator hideDefault={true} theme={ampTheme}>
-      <SignIn/>
-    <SignUp/>
-    <ConfirmSignIn/>
-    <VerifyContact/>
-    <ConfirmSignUp/>
-    <ForgotPassword/>
+    <SignIn />
+    <SignUp />
+    <ConfirmSignIn />
+    <VerifyContact />
+    <ConfirmSignUp />
+    <ForgotPassword />
     <RequireNewPassword />
     <div >
       My Component Here
@@ -228,29 +217,29 @@ const FriendsPageAuth = () => {
 
 const MyChordsPageAuth = () => {
   return <Authenticator hideDefault={true} theme={ampTheme}>
-      <SignIn/>
-    <SignUp/>
-    <ConfirmSignIn/>
-    <VerifyContact/>
-    <ConfirmSignUp/>
-    <ForgotPassword/>
+    <SignIn />
+    <SignUp />
+    <ConfirmSignIn />
+    <VerifyContact />
+    <ConfirmSignUp />
+    <ForgotPassword />
     <RequireNewPassword />
-      <DisplayData />
-   </Authenticator>
+    <DisplayData />
+  </Authenticator>
 }
 
 const Home = () => {
-    return <Authenticator hideDefault={true} theme={ampTheme}>
-      <SignIn/>
-    <SignUp/>
-    <ConfirmSignIn/>
-    <VerifyContact/>
-    <ConfirmSignUp/>
-    <ForgotPassword/>
+  return <Authenticator hideDefault={true} theme={ampTheme}>
+    <SignIn />
+    <SignUp />
+    <ConfirmSignIn />
+    <VerifyContact />
+    <ConfirmSignUp />
+    <ForgotPassword />
     <RequireNewPassword />
     <div >
-      <Map/>
-      <AddButton/>
+      <Map />
+      <AddButton />
     </div></Authenticator>
 }
 
