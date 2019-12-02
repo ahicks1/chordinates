@@ -23,6 +23,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import HomeIcon  from '@material-ui/icons/Home';
 import SwitchMUI from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -38,6 +39,7 @@ import {
 } from "react-router-dom";
 import DisplayData from './components/DisplayData';
 
+const host = "obxta7h5y4.execute-api.us-east-2.amazonaws.com"
 const ampTheme = {
   sectionHeader: {},
   button: { 'backgroundColor': '#8e24aa' },
@@ -131,12 +133,11 @@ function App() {
                 open={openMenu}
                 onClose={handleClose}
               >
-                <MenuItem id="/chords" onClick={handleMenuChoice}>My Pins</MenuItem>
-                <MenuItem id="/friends" onClick={handleMenuChoice}>My Friends</MenuItem>
-                <MenuItem id="/history" onClick={handleMenuChoice}>My History</MenuItem>
-                <MenuItem id="/chords/nearLocation" onClick={handleMenuChoice}>Filter View</MenuItem>
+                <MenuItem component={Link} to='/chords' onClick={handleClose}>My Pins</MenuItem>
+                <MenuItem component={Link} to="/friends" onClick={handleClose}>My Friends</MenuItem>
+                <MenuItem component={Link} to="/history" onClick={handleClose}>My History</MenuItem>
+                <MenuItem component={Link} to="/chords/nearLocation" onClick={handleClose}>Filter View</MenuItem>
               </Menu>
-              <DisplayData open={Boolean(menuChoice)} endpoint={Boolean(menuChoice) ? String(menuChoice.id) : ""} />
             </div>
             <Typography variant="h6" className={classes.title}>
               Chordinates
@@ -167,10 +168,21 @@ function App() {
                 open={openAccount}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleSignOut}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>Sign out</MenuItem>
+                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
               </Menu>
             </div>
+            <IconButton
+                id="home"
+                aria-label="return to home page"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleClose}
+                component={Link} to='/'
+                color="inherit"
+              >
+                <HomeIcon />
+              </IconButton>
           </Toolbar>
         </AppBar>
         {/* A <Switch> looks through its children <Route>s and
@@ -185,8 +197,8 @@ function App() {
             <Route path="/login-code">
 
             </Route>
-            <Route path="/">
-              <Home />
+            <Route path="/friends">
+              <FriendsPageAuth/>
             </Route>
           <Route path="/">
             <Home />
@@ -195,6 +207,20 @@ function App() {
       </div>
     </Router>
   )
+}
+
+const FriendsPageAuth = () => {
+  return <Authenticator hideDefault={true} theme={ampTheme}>
+      <SignIn/>
+    <SignUp/>
+    <ConfirmSignIn/>
+    <VerifyContact/>
+    <ConfirmSignUp/>
+    <ForgotPassword/>
+    <RequireNewPassword />
+    <div >
+      My Component Here
+    </div></Authenticator>
 }
 
 const Home = () => {

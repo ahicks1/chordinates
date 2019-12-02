@@ -1,5 +1,5 @@
 export const getChordsForUser = async (host, token) => {
-  const url = `http://${host}/Alpha/Chords`;
+  const url = `https://${host}/Alpha/Chords`;
   const res = await fetch(url, {
     method: 'GET',
     headers: {
