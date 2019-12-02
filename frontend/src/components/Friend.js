@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     console.log(props);
     const {authData} = props;
     const classes = useStyles();
-    const [data, setData] = React.useState(['Loading...']);
+    const [data, setData] = React.useState([]);
     const handleClick = () => {
         window.open("https://open.spotify.com/album/5jZNxb2TgaXKXtTK2dPEqT", "_blank"); 
     };

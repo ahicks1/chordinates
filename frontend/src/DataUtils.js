@@ -42,7 +42,7 @@ export const getFriends = async (host, token) => {
 }
 
 export const getChordsNearLocation = async (host, token, lat, lon) => {
-  const url = `https://${host}/Alpha/chords/near-location?lat=${lat}&lon=${lon}&range=${10}`;
+  const url = `https://${host}/Alpha/chords/near-location?lat=${lat}&lon=${lon}&range=${1000}`;
   const res = await fetch(url, {
     method: 'GET',
     headers: {

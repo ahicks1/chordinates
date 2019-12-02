@@ -56,10 +56,13 @@ const invokeLambdaPromise = (lambdaName, payload) => {
       FunctionName: lambdaName,
       Payload: payload // pass params
     }, function(error, data) {
+      console.log(data);
       if (error) {
         reject(error);
       }
+
       if(data.Payload){
+        console.log(data.Payload);
        resolve(data.Payload);
       }
     });
@@ -67,6 +70,7 @@ const invokeLambdaPromise = (lambdaName, payload) => {
 }
 
 const badRequest = () => {
+  console.log('Bad request');
   const response = {
     statusCode: 400,
     body: JSON.stringify('Malformed request'),

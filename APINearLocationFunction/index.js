@@ -40,12 +40,14 @@ try {
       const rows = await getChordsByLocation(client, {lat:parseFloat(lat), lon:parseFloat(lon)}, parseFloat(range));
       return {
         statusCode: 200,
+        headers: {'Access-Control-Allow-Origin':'*'},
         body: JSON.stringify({chords: rows})
       };
     default:
         return {
           statusCode: 405,
-          body: `${event.resource} doesn't support method ${event.httpMethod}`
+          body: `${event.resource} doesn't support method ${event.httpMethod}`,
+          headers: {'Access-Control-Allow-Origin':'*'},
         };
   }
 } finally {

@@ -1,4 +1,4 @@
-import React, {useRef, useEffect} from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import 'ol/ol.css';
 import Map from 'ol/Map';
 import Feature from 'ol/Feature'
@@ -13,15 +13,34 @@ import Point from 'ol/geom/Point'
 import {Circle as CircleStyle, Fill, Icon, Stroke, Style} from 'ol/style';
 import { getChordsNearLocation } from '../DataUtils';
 
-const GoogleMap = ({locationChanged = () => {}}) => {
+import {host} from '../App';
+
+const GoogleMap = ({locationChanged = () => {}, authData}) => {
 
   const [chordData, setChordData] = useState([]);
+  const [latLon, setLatLon] = useState([1,1]);
   const [loadChords, setLoadChords] = useState(false);
-  if(!loadChords) {
-    setLoadChords(true);
-    getChordsNearLocation(host, token, lat, lon)
-  }
-
+  const map = useRef();
+  // if(!loadChords) {
+  //   setLoadChords(true);
+  //   getChordsNearLocation(host, token, lat, lon)
+  // }
+  console.log(authData);
+  useEffect(() => {
+    if(authData && !loadChords) {
+      const [lat, lon] = latLon;
+      getChordsNearLocation(
+          host,  
+          authData.getSignInUserSession().accessToken.jwtToken, 
+          lat, 
+          lon
+      ).then((data) => {
+        console.log(data);
+        setChordData(data.chords);
+      })
+      setLoadChords(true);
+    }
+  }, [authData])
   const view = new View({
     center: fromLonLat([1,1 ]),
     zoom: 16
@@ -32,6 +51,33 @@ const GoogleMap = ({locationChanged = () => {}}) => {
     geometry: new Point(fromLonLat([1,1])),
   })
 
+  const chordLayer = useRef( new VectorLayer({
+      source: new VectorSource({
+        features:[]
+      }),
+      style: (feature) => {
+        return styles[feature.get('type')];
+      }
+    })
+  )
+
+  useEffect(() => {
+    if(!map.current) return;
+    const features = chordData.map((chord) => {
+      const {longitude, latitude} = chord;
+      return new Feature({
+        type:'chordMarker',
+        geometry: new Point(fromLonLat([longitude,latitude])),
+        params:{...chord}
+      })
+    })
+    console.log(features);
+    //chordLayer.current.getSource().clear();
+    chordLayer.current.getSource().addFeatures(features);
+    map.current.render();
+  }, [chordData, map.current])
+
+  
   const playerLayer = new VectorLayer({
     source: new VectorSource({
       features:[locationMarker]
@@ -61,17 +107,27 @@ const GoogleMap = ({locationChanged = () => {}}) => {
           color: 'white', width: 2
         })
       })
+    }),
+    'chordMarker': new Style({
+      image: new CircleStyle({
+        radius: 7,
+        fill: new Fill({color: 'green'}),
+        stroke: new Stroke({
+          color: 'white', width: 2
+        })
+      })
     })
   };
 
-  const map = useRef();
-  const markerLayer = new VectorLayer()
+  
+  
   useEffect(() => {
     map.current = new Map({
       target: 'googleMapElement',
       controls:[],
       interactions:[],
       layers: [
+        
         new TileLayer({
           source: new Stamen({
             layer: 'watercolor'
@@ -82,6 +138,7 @@ const GoogleMap = ({locationChanged = () => {}}) => {
             layer: 'terrain-labels'
           })
         }),
+        chordLayer.current,
         playerLayer
       ],
       view: view,
