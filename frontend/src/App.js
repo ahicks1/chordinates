@@ -36,6 +36,7 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import DisplayData from './components/DisplayData';
 
 const ampTheme = {
   sectionHeader: {},
@@ -75,12 +76,11 @@ Amplify.configure({
 
 function App() {
   const classes = useStyles();
-  
+
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-  const handleChange = event => {
-    //setAuth(event.target.checked);
-  };
+  const [menuChoice, setMenuChoice] = React.useState(null);
+  const openAccount = Boolean(anchorEl) && anchorEl.id==="account";
+  const openMenu = Boolean(anchorEl) && anchorEl.id==="function";
 
   const handleSignOut = () => {
     Auth.signOut()
@@ -90,36 +90,34 @@ function App() {
 
   const handleMenu = event => {
     const currTarget = event.currentTarget;
-    console.log(currTarget);
     setAnchorEl(currTarget);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleMenuChoice = event => {
+    console.log(event.currentTarget);
+    console.log(event.currentTarget.id);
+    setMenuChoice(event.currentTarget);
+  }
+
+  const handleMenuChoiceClose = () => {
+    setMenuChoice(null);
+  }
+
   return (
-      <Router>
-        <div className="App">
+    <Router>
+      <div className="App">
         <AppBar elevation={0} position="static" className={classes.bar}>
-        <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            Chordinates
-          </Typography>
+          <Toolbar>
             <div>
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <AccountCircle />
+              <IconButton id="function" edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={handleMenu}>
+                <MenuIcon />
               </IconButton>
               <Menu
-                id="menu-appbar"
+                id="function-menu-appbar"
                 anchorOrigin={{
                   vertical: 'top',
                   horizontal: 'right',
@@ -129,20 +127,56 @@ function App() {
                   vertical: 'top',
                   horizontal: 'right',
                 }}
-                anchorEl = {anchorEl}
-                open={open}
+                anchorEl={anchorEl}
+                open={openMenu}
+                onClose={handleClose}
+              >
+                <MenuItem id="/chords" onClick={handleMenuChoice}>My Pins</MenuItem>
+                <MenuItem id="/friends" onClick={handleMenuChoice}>My Friends</MenuItem>
+                <MenuItem id="/history" onClick={handleMenuChoice}>My History</MenuItem>
+                <MenuItem id="/chords/nearLocation" onClick={handleMenuChoice}>Filter View</MenuItem>
+              </Menu>
+              <DisplayData open={Boolean(menuChoice)} endpoint={Boolean(menuChoice) ? String(menuChoice.id) : ""} />
+            </div>
+            <Typography variant="h6" className={classes.title}>
+              Chordinates
+          </Typography>
+            <div>
+              <IconButton
+                id="account"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+              <Menu
+                id="account-menu-appbar"
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                anchorEl={anchorEl}
+                open={openAccount}
                 onClose={handleClose}
               >
                 <MenuItem onClick={handleSignOut}>Profile</MenuItem>
                 <MenuItem onClick={handleClose}>Sign out</MenuItem>
               </Menu>
             </div>
-        </Toolbar>
-      </AppBar>
-          {/* A <Switch> looks through its children <Route>s and
+          </Toolbar>
+        </AppBar>
+        {/* A <Switch> looks through its children <Route>s and
               renders the first one that matches the current URL. */}
-          <Switch>
-            {/* <Route path="/about">
+        <Switch>
+          {/* <Route path="/about">
               <About />
             </Route> */}
             <Route path="/users">
@@ -154,10 +188,13 @@ function App() {
             <Route path="/">
               <Home />
             </Route>
-          </Switch>
-        </div>
-      </Router>
-    )
+          <Route path="/">
+            <Home />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
+  )
 }
 
 const Home = () => {
