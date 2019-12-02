@@ -52,7 +52,9 @@ function App() {
   };
 
   const handleMenu = event => {
-    setAnchorEl(event.currentTarget);
+    const currTarget = event.currentTarget;
+    console.log(currTarget);
+    setAnchorEl(currTarget);
   };
 
   const handleClose = () => {
@@ -90,11 +92,12 @@ function App() {
                   vertical: 'top',
                   horizontal: 'right',
                 }}
-                // open={open}
-                // onClose={handleClose}
+                anchorEl = {anchorEl}
+                open={open}
+                onClose={handleClose}
               >
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
+                <MenuItem onClick={handleClose}>Sign out</MenuItem>
               </Menu>
             </div>
         </Toolbar>
