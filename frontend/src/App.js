@@ -39,6 +39,7 @@ import {
   Link
 } from "react-router-dom";
 import DisplayData from './components/DisplayData';
+import Friend from './components/Friend';
 
 export const host = "obxta7h5y4.execute-api.us-east-2.amazonaws.com"
 const ampTheme = {
@@ -210,9 +211,7 @@ const FriendsPageAuth = () => {
     <ConfirmSignUp />
     <ForgotPassword />
     <RequireNewPassword />
-    <div >
-      My Component Here
-    </div></Authenticator>
+    <Friend /></Authenticator>
 }
 
 const MyChordsPageAuth = () => {
