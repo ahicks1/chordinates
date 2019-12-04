@@ -41,6 +41,21 @@ export const getFriends = async (host, token) => {
   return await res.json();
 }
 
+export const postFriend = async (host, token, email) => {
+  const url = `https://${host}/Alpha/friends`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      auth:token,
+    },
+    body: JSON.stringify({
+      email: email
+    }),
+  });
+  return await res.json();
+}
+
 export const getChordsNearLocation = async (host, token, lat, lon) => {
   const url = `https://${host}/Alpha/chords/near-location?lat=${lat}&lon=${lon}&range=${1000}`;
   const res = await fetch(url, {

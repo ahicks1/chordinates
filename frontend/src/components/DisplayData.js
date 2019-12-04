@@ -24,6 +24,7 @@ const useStyles = makeStyles(theme => ({
       color: 'black',
       outline: 'none',
       width: '100%',
+      marginLeft: '3%',
     },
   }))
 
@@ -31,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     console.log(props);
     const {endpoint = "", authData} = props;
     const classes = useStyles();
-    const [data, setData] = React.useState(['Loading...']);
+    const [data, setData] = React.useState([]);
     const handleClick = url => {
         window.open(url, "_blank"); 
     };
