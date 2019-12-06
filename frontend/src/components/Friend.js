@@ -7,6 +7,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import FaceIcon from '@material-ui/icons/Face';
+import DeleteIcon from '@material-ui/icons/Delete';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import { host } from '../App';
 import Dialog from '@material-ui/core/Dialog';
@@ -41,6 +42,7 @@ const useStyles = makeStyles(theme => ({
   },
   toTheLeft: {
     marginLeft: '3%',
+    marginRight: '35%',
   }
 }))
 
@@ -57,7 +59,7 @@ const Friend = (props) => {
     setEmail(event.target.value);
   };
   const postFunc = () => {
-    if(authData){
+    if(authData){ 
       postFriend(host, authData.getSignInUserSession().accessToken.jwtToken, email);
     }
   }
@@ -77,13 +79,17 @@ const Friend = (props) => {
       <List component='nav' className={classes.container}>
         {data.map(friend => {
           return <ListItem
-            button key={Boolean(friend.email) ? friend.email : randStr()}
-            onClick={handleClick}
+            key={Boolean(friend.email) ? friend.email : randStr()}
           >
             <ListItemIcon>
               <FaceIcon />
             </ListItemIcon>
             <ListItemText primary={Boolean(friend.email) ? friend.email : "FRIEND WITHOUT EMAIL"} />
+            <Button onClick={handleClick}>
+              <ListItemIcon>
+                <DeleteIcon />
+              </ListItemIcon>
+            </Button>
           </ListItem>;
         })}
         <ListItem
