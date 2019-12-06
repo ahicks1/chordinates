@@ -45,7 +45,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Friend = (props) => {
-  console.log(props);
   const { authData } = props;
   const classes = useStyles();
   const [data, setData] = React.useState([]);

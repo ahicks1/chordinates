@@ -53,7 +53,7 @@ export const postFriend = async (host, token, email) => {
       email: email
     }),
   });
-  return await res.json();
+  return await res;
 }
 
 export const getChordsNearLocation = async (host, token, lat, lon) => {
