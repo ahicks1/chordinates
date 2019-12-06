@@ -53,6 +53,21 @@ export const postFriend = async (host, token, email) => {
       email: email
     }),
   });
+  return res;
+}
+
+export const deleteFriend = async (host, token, uID) => {
+  const url = `https://${host}/Alpha/friends`;
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      auth:token,
+    },
+    body: JSON.stringify({
+      uID: uID
+    }),
+  });
   return await res;
 }
 

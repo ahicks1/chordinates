@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
-import { getFriends, postFriend } from '../DataUtils';
+import { getFriends, postFriend, deleteFriend } from '../DataUtils';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -52,14 +52,21 @@ const Friend = (props) => {
   const [data, setData] = React.useState([]);
   const [add, setAdd] = React.useState(false);
   const [email, setEmail] = React.useState("");
-  const handleClick = () => {
-    window.open("https://open.spotify.com/album/5jZNxb2TgaXKXtTK2dPEqT", "_blank");
+  const handleClick = (uid) => {
+    if (authState === 'signedIn') {
+      deleteFriend(host, authData.getSignInUserSession().accessToken.jwtToken, uid).then( () => {
+        getFriends(host, authData.getSignInUserSession().accessToken.jwtToken)
+        .then(json => {
+          setData(json.friends);
+        });
+      });
+    }
   };
   const handleEmailChange = event => {
     setEmail(event.target.value);
   };
   const postFunc = () => {
-    if(authData){ 
+    if (authState === 'signedIn') {
       postFriend(host, authData.getSignInUserSession().accessToken.jwtToken, email);
     }
   }
@@ -85,7 +92,7 @@ const Friend = (props) => {
               <FaceIcon />
             </ListItemIcon>
             <ListItemText primary={Boolean(friend.email) ? friend.email : "FRIEND WITHOUT EMAIL"} />
-            <Button onClick={handleClick}>
+            <Button onClick={() => handleClick(friend.uid)}>
               <ListItemIcon>
                 <DeleteIcon />
               </ListItemIcon>
