@@ -205,7 +205,7 @@ function App() {
 const FriendsPageAuth = () => {
   return <Authenticator hideDefault={true} theme={ampTheme}>
     <SignIn />
-    <SignUp />
+    <SignUp override={'SignUp'} />
     <ConfirmSignIn />
     <VerifyContact />
     <ConfirmSignUp />
@@ -217,7 +217,7 @@ const FriendsPageAuth = () => {
 const MyChordsPageAuth = () => {
   return <Authenticator hideDefault={true} theme={ampTheme}>
     <SignIn />
-    <SignUp />
+    <SignUp override={'SignUp'}/>
     <ConfirmSignIn />
     <VerifyContact />
     <ConfirmSignUp />

@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
 
   const DisplayData = (props) => {
     console.log(props);
-    const {endpoint = "", authData} = props;
+    const {endpoint = "", authData, authState} = props;
     const classes = useStyles();
     const [data, setData] = React.useState(['Loading...']);
     const handleClick = url => {
@@ -37,13 +37,13 @@ const useStyles = makeStyles(theme => ({
     };
 
     useEffect(() => {
-        if(authData) {
+        if(authState === 'signedIn') {
             getChordsForUser(host, authData.getSignInUserSession().accessToken.jwtToken)
             .then(json => {
               setData(json.chords);
             });
         }
-      }, [endpoint, authData]);
+      }, [endpoint, authData, authState]);
     
       return (
         <section>

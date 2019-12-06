@@ -15,7 +15,7 @@ import { getChordsNearLocation } from '../DataUtils';
 
 import {host} from '../App';
 
-const GoogleMap = ({locationChanged = () => {}, authData}) => {
+const GoogleMap = ({locationChanged = () => {}, authData, authState}) => {
 
   const [chordData, setChordData] = useState([]);
   const [latLon, setLatLon] = useState([1,1]);
@@ -27,7 +27,7 @@ const GoogleMap = ({locationChanged = () => {}, authData}) => {
   // }
   console.log(authData);
   useEffect(() => {
-    if(authData && !loadChords) {
+    if(authState === 'signedIn' && !loadChords) {
       const [lat, lon] = latLon;
       getChordsNearLocation(
           host,  
@@ -40,7 +40,7 @@ const GoogleMap = ({locationChanged = () => {}, authData}) => {
       })
       setLoadChords(true);
     }
-  }, [authData])
+  }, [authData, authState])
   const view = new View({
     center: fromLonLat([1,1 ]),
     zoom: 16

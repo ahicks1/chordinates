@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
 
   const Friend = (props) => {
     console.log(props);
-    const {authData} = props;
+    const {authData, authState} = props;
     const classes = useStyles();
     const [data, setData] = React.useState([]);
     const handleClick = () => {
@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
     };
 
     useEffect(() => {
-        if(authData) {
+        if(authState === 'signedIn') {
             getFriends(host, authData.getSignInUserSession().accessToken.jwtToken)
             .then(json => {
               setData(json.friends);
