@@ -10,7 +10,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-import {host} from '../App'
+import {host} from '../App';
+import {views, times} from '../ViewsAndTimes';
 
 const useStyles = makeStyles(theme => ({
   fab: {
@@ -25,64 +26,6 @@ const useStyles = makeStyles(theme => ({
     },
   },
 }))
-
-const views = [
-  {
-    value: 'ALL',
-    label: 'Everyone',
-  },
-  {
-    value: 'PRI',
-    label: 'Me',
-  },
-  {
-    value: 'FRI',
-    label: 'Friends Only',
-  }
-];
-
-const times = [
-  {
-    value: 0,
-    label: 'ALL',
-  },
-  {
-    value: 1,
-    label: 'MORNING',
-  },
-  {
-    value: 2,
-    label: 'LUNCH',
-  },
-  {
-    value: 3,
-    label: 'AFTERNOON',
-  },
-  {
-    value: 4,
-    label: 'EVENING RUSH HOUR',
-  },
-  {
-    value: 5,
-    label: 'DINNER',
-  },
-  {
-    value: 6,
-    label: 'ALL NIGHT',
-  },
-  {
-    value: 7,
-    label: 'SUNSET',
-  },
-  {
-    value: 8,
-    label: 'SUNRISE',
-  },
-  {
-    value: 9,
-    label: 'DAYLIGHT',
-  },
-];
 
 const AddButton = (props) => {
   const { lat, long, authData } = props

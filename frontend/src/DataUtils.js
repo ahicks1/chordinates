@@ -29,8 +29,24 @@ export const postChord = async (host, token, lat, long, view, time, spotifyurl) 
   return await res.json();
 }
 
+export const updateChord = async (host, token, pinID, view, time) => {
+  const url = `https://${host}/Alpha/${pinID}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      auth:token,
+    },
+    body: JSON.stringify({
+      permission: view, 
+      tID: time,
+    }),
+  });
+  return res.json();
+}
+
 export const deleteChord = async (host, token, pinID) => {
-  const url = `https://${host}/Alpha/chords/${pinID}`;
+  const url = `https://${host}/Alpha/${pinID}`;
   const res = await fetch(url, {
     method: 'DELETE',
     headers: {
