@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
-import { getChordsForUser, deleteChord } from '../DataUtils';
+import { getHistoryForUser } from '../DataUtils';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
     },
   }))
 
-  const DisplayData = (props) => {
+  const History = (props) => {
     console.log(props);
     const {endpoint = "", authData, authState} = props;
     const classes = useStyles();
@@ -42,20 +42,20 @@ const useStyles = makeStyles(theme => ({
 
     const handleDeleteClick = (pid) => {
       if (authState === 'signedIn') {
-        deleteChord(host, authData.getSignInUserSession().accessToken.jwtToken, pid).then( () => {
-          getChordsForUser(host, authData.getSignInUserSession().accessToken.jwtToken)
-          .then(json => {
-            setData(json.chords);
-          });
-        });
+        // deleteChord(host, authData.getSignInUserSession().accessToken.jwtToken, pid).then( () => {
+        //   getChordsForUser(host, authData.getSignInUserSession().accessToken.jwtToken)
+        //   .then(json => {
+        //     setData(json.chords);
+        //   });
+        // });
       }
     };
 
     useEffect(() => {
         if(authState === 'signedIn') {
-            getChordsForUser(host, authData.getSignInUserSession().accessToken.jwtToken)
+            getHistoryForUser(host, authData.getSignInUserSession().accessToken.jwtToken)
             .then(json => {
-              setData(json.chords);
+              setData(json.history);
             });
         }
       }, [endpoint, authData, authState]);
@@ -64,20 +64,17 @@ const useStyles = makeStyles(theme => ({
         <section className={classes.container}> 
             <div><br/><br/></div>
           <List component='nav'>
-            {data.map(chord => {
+            {data.map(play => {
               return <ListItem
-                key={chord.pinID}
+                key={play.pinID}
               >
-                <Button onClick={() => handleClick(chord.pinID)}>
+                <Button onClick={() => handleClick(play.url)}>
                   <ListItemIcon>
                     <MusicNoteIcon />
                   </ListItemIcon>
                 </Button>
-                <ListItemText primary={chord.songname + " during " + chord.timename + " at location (" + chord.longitude + ", " + chord.latitude + ")"} />
-                <Button onClick={() => handleDeleteClick(chord.pinID)}>
-                  <ListItemIcon>
-                    <DeleteIcon />
-                  </ListItemIcon>
+                <ListItemText primary={play.songname + " at " + play.timestamp} />
+                <Button onClick={() => handleDeleteClick(play.pinID)}>
                 </Button>
               </ListItem>;
             })}
@@ -86,4 +83,4 @@ const useStyles = makeStyles(theme => ({
       );
   }
   
-  export default DisplayData;
+  export default History;

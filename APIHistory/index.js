@@ -11,8 +11,10 @@ const pool = new pg.Pool({
 const addHistoryText = `INSERT INTO public."Play"("uID", "pinID")
 VALUES ($1, $2);`;
 
-const getHistoryText = `SELECT * FROM public."Play"
-WHERE "uID" = $1;`;
+const getHistoryText = `SELECT * 
+FROM public."Play", public.fullchord
+WHERE public."Play"."uID" = $1
+AND public."Play"."pinID" = public.fullchord."pinID";`;
 
 const getHistoryForUser = async (client, userID) => {
   const query = {
