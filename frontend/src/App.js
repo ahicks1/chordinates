@@ -2,8 +2,8 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Map from './components/Map'
 import './App.css';
-import './components/AddButton'
 import AddButton from './components/AddButton';
+import MapContainer from './components/MapContainer'
 import Amplify, { Auth } from 'aws-amplify';
 import { Authenticator } from 'aws-amplify-react';
 
@@ -244,12 +244,7 @@ const MyChordsPageAuth = () => {
 }
 
 const Home = () => {
-  const [lat, setLat] = React.useState(0);
-  const [long, setLong] = React.useState(0);
-  const setLoc = (latitude, longitude) => {
-    setLat(latitude); 
-    setLong(longitude);
-  }
+  
   return <Authenticator hideDefault={true} theme={ampTheme}>
     <SignIn />
     <SignUp />
@@ -258,8 +253,7 @@ const Home = () => {
     <ConfirmSignUp />
     <ForgotPassword />
     <RequireNewPassword />
-    <Map locationChanged={setLoc}/>
-    <AddButton lat={lat} long={long}/>
+    <MapContainer />
     </Authenticator>
 }
 
