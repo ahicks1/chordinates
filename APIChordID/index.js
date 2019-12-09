@@ -12,7 +12,7 @@ const deleteQueryText = `DELETE FROM public."Chord"
 WHERE "pinID" = $1 AND "uID" = $2;`
 
 const updateQueryText = `UPDATE public."Chord"
-SET longitude=$3, latitude=$4, permission=$5, "tID"=$6
+SET permission=$5, "tID"=$6
 WHERE "pinID" = $1 AND "uID" = $2;`
 
 exports.handler = async (event, context) => {
@@ -40,10 +40,10 @@ exports.handler = async (event, context) => {
   try {
     switch (event.httpMethod) {
       case 'POST':
-        const {latitude, longitude, permission, tID} = JSON.parse(event.body);
+        const {permission, tID} = JSON.parse(event.body);
         await client.query({
           text: updateQueryText,
-          values: [pinID, userID, longitude, latitude, permission, tID]
+          values: [pinID, userID, permission, tID]
         });
         return closeAndReturn(client, {
           statusCode: 200,

@@ -40,6 +40,7 @@ import {
 } from "react-router-dom";
 import DisplayData from './components/DisplayData';
 import Friend from './components/Friend';
+import History from './components/History';
 
 export const host = "obxta7h5y4.execute-api.us-east-2.amazonaws.com"
 const ampTheme = {
@@ -193,6 +194,9 @@ function App() {
           <Route path="/friends">
             <FriendsPageAuth />
           </Route>
+          <Route path="/history">
+            <HistoryPageAuth />
+          </Route>
           <Route path="/">
             <Home />
           </Route>
@@ -212,6 +216,18 @@ const FriendsPageAuth = () => {
     <ForgotPassword />
     <RequireNewPassword />
     <Friend /></Authenticator>
+}
+
+const HistoryPageAuth = () => {
+  return <Authenticator hideDefault={true} theme={ampTheme}>
+    <SignIn />
+    <SignUp override={'SignUp'} />
+    <ConfirmSignIn />
+    <VerifyContact />
+    <ConfirmSignUp />
+    <ForgotPassword />
+    <RequireNewPassword />
+    <History /></Authenticator>
 }
 
 const MyChordsPageAuth = () => {
