@@ -8,28 +8,89 @@ const pool = new pg.Pool({
     connectionTimeoutMillis: 10000
 });
 
+const getQueryText = `SELECT AVG("numStars")
+FROM public."Rating"
+WHERE public."Rating"."pinID" = $1
+`;
+
+const addNewRatingQueryText = `INSERT INTO public."Rating"("numStars", "uID", "pinID")
+  VALUES ($1, $2, $3)`;
+
+const addRatingForUser = async(client, userID, pinID, numStars) =>{
+  const query = {
+    text: addNewRatingQueryText,
+    values: [numStars, userID, pinID],
+  };
+  const response = await client.query(query);
+  return response.rows;
+};
+
+const getRatingsForUser = async (client, pinID) => {
+  const query = {
+    text:getQueryText,
+    values: [pinID],
+  };
+  const response = await client.query(query);
+  return response.rows;
+};
+
+
+
+
+const closeAndReturn = (client, response) => {
+  //client.release(true);
+  return response;
+}
+
 exports.handler = async (event, context) => {
 
-  // https://github.com/brianc/node-postgres/issues/930#issuecomment-230362178
+ // https://github.com/brianc/node-postgres/issues/930#issuecomment-230362178
   context.callbackWaitsForEmptyEventLoop = false; // !important to reuse pool
   console.log('DB Connecting')
   const client = await pool.connect();
   console.log('DB Connected')
 
-  
-  //const client = await pool.connect();
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify('Hello from Lambda!'),
-  };
+  console.log(event);
+  console.log(context);
+
+  const userID = event.requestContext.authorizer.claims.sub;
+  const pinID = parseInt(event.pathParameters['chord-id'])
+
+  //TODO: Paginate!
   try {
-    const r = await client.query('SELECT * FROM public."Song"');
-    console.log(r);
-    response.body = JSON.stringify(r);
+    switch (event.httpMethod) {
+      case 'GET':
+        const rows = await getRatingsForUser(client, pinID);
+        return closeAndReturn(client, {
+          statusCode: 200,
+          headers: {'Access-Control-Allow-Origin':'*'},
+          body: JSON.stringify({ratings: rows})
+        });
+      case 'POST':
+        if(!JSON.parse(event.body)) {
+          return closeAndReturn(client, {
+            statusCode: 400, 
+            headers: {'Access-Control-Allow-Origin':'*'},
+            body: 'Missing rating info',
+          });
+        }
+        const {pinID, numStars} = JSON.parse(event.body);
+        if(!(pinID) ||  !(numStars)) return closeAndReturn(client, {
+            statusCode: 401, 
+            body: 'Malformed Query',
+          });
+        await addRatingForUser(client, userID, pinID, numStars);
+        return closeAndReturn(client, {
+          statusCode: 300,
+          body: 'inserted',
+        });
+      default:
+          return closeAndReturn(client, {
+            statusCode: 405,
+            body: `${event.resource} doesn't support method ${event.httpMethod}`
+          });
+    }
   } finally {
-    // https://github.com/brianc/node-postgres/issues/1180#issuecomment-270589769
     client.release(true);
   }
-  
-  return response;
 };
