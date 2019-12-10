@@ -153,7 +153,7 @@ export const getReviews = async (host, token, pinID) => {
 export const postReviews = async (host, token, pinID, numStars) => {
   const url = `https://${host}/Alpha/${pinID}/reviews`;
   const res = await fetch(url, {
-    method:  'GET',
+    method:  'POST',
     headers: {
       'Content-Type': 'application/json',
       auth:token,
