@@ -137,3 +137,30 @@ export const getChordsNearLocation = async (host, token, lat, lon) => {
   });
   return await res.json();
 }
+
+export const getReviews = async (host, token, pinID) => {
+  const url = `https://${host}/Alpha/${pinID}/reviews`;
+  const res = await fetch(url, {
+    method:  'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      auth:token,
+    },
+  });
+  return await res.json();
+}
+
+export const postReviews = async (host, token, pinID, numStars) => {
+  const url = `https://${host}/Alpha/${pinID}/reviews`;
+  const res = await fetch(url, {
+    method:  'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      auth:token,
+    },
+    body: JSON.stringify({
+      numStars: numStars,
+    }),
+  });
+  return await res.json();
+}
