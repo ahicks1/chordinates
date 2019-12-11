@@ -127,7 +127,6 @@ function App() {
                 <MenuItem component={Link} to='/chords' onClick={handleClose}>My Chords</MenuItem>
                 <MenuItem component={Link} to="/friends" onClick={handleClose}>My Friends</MenuItem>
                 <MenuItem component={Link} to="/history" onClick={handleClose}>My History</MenuItem>
-                <MenuItem component={Link} to="/chords/nearLocation" onClick={handleClose}>Filter View</MenuItem>
               </Menu>
             </div>
             <Typography variant="h6" className={classes.title}>
@@ -159,7 +158,6 @@ function App() {
                 open={openAccount}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
                 <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
               </Menu>
             </div>

@@ -112,7 +112,7 @@ export const getHistoryForUser = async (host, token) => {
 }
 
 export const playSong = async (host, token, pinID) => {
-  const url = `https://${host}/Alpha/chords`;
+  const url = `https://${host}/Alpha/history`;
   const res = await fetch(url, {
     method: 'POST',
     headers: {

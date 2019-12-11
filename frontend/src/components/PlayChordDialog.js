@@ -1,23 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Fab from '@material-ui/core/Fab';
-import { getChordsForUser, deleteChord, updateChord } from '../DataUtils';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import MusicNoteIcon from '@material-ui/icons/MusicNote';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
+import { getReviews } from '../DataUtils';
+import Rating from '@material-ui/lab/Rating';
 import { host } from '../App';
-import {views, times} from '../ViewsAndTimes';
 
 const useStyles = makeStyles(theme => ({
   fab: {
@@ -44,10 +34,23 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const PlayChordDialog = ({open, onClose, chord={}}) => {
+const PlayChordDialog = ({token, open, onClose, onPlay, chord={}}) => {
   const classes = useStyles();
-  const playSong = () => {};
-  const {songname='Closing', url=''} = chord;
+  const {songname='Closing', url='', pinID} = chord;
+  const [rating, setRating] = useState(-1);
+  useEffect( () => {
+    if(chord.pinID) {
+      getReviews(host, token, pinID ).then(({ratings=[]}) => {
+        console.log('fetched reviews');
+        console.log(ratings);
+        const obj = ratings[0]?ratings[0]:{};
+        const avg = obj.avg!=null? obj.avg:0;
+        setRating(avg)
+      })
+    } else {
+      setRating(-1);
+    }
+  }, [chord]);
   return <Dialog
   open={open}
   onClose={onClose}
@@ -58,11 +61,15 @@ const PlayChordDialog = ({open, onClose, chord={}}) => {
     {songname}
   </DialogTitle>
   <DialogContent className={classes.root}>
-    Hello world
+  {rating >= 0 && <Rating
+            name="simple-controlled"
+            value={rating}
+            readOnly
+          />}
   </DialogContent>
 
   <DialogActions>
-    <Button id="submit" onClick={onClose} 
+    <Button id="submit" onClick={onPlay} 
       href={url}
       rel="noopener"
       target="_blank"

@@ -14,12 +14,7 @@ const useOpenLayersMap = (externalLayers=[], locationCallback = () => {}) => {
       center: fromLonLat([1,1 ]),
       zoom: 16
     });
-    const interactions = defaults({
-      dragPan:false, 
-      altShiftDragRotate:false, 
-      pinchRotate: false,
-
-    });
+    const interactions = defaults();
     map.current = new Map({
       target: 'googleMapElement',
       controls:[],
@@ -40,6 +35,7 @@ const useOpenLayersMap = (externalLayers=[], locationCallback = () => {}) => {
       ],
       view: view,
     });
+    console.log(map.current.getView().getProjection().getMetersPerUnit())
     const id = navigator.geolocation.watchPosition( pos => {
       console.log("got position = "+pos.coords.latitude,pos.coords.longitude)
       view.setCenter(fromLonLat([pos.coords.longitude,pos.coords.latitude]))

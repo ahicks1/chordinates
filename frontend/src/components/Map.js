@@ -39,8 +39,35 @@ const styles = {
       src: 'slice2.png',
       scale: 0.125
     })
-  })
+  }),
+  'chordMarkerInvalid': new Style({
+    image: new Icon({
+      color: '#fc0303',
+      crossOrigin: 'anonymous',
+      src: 'slice3.png',
+      scale: 0.125
+    })
+  }),
 };
+
+function degreesToRadians(degrees) {
+  return degrees * Math.PI / 180;
+}
+
+function distanceInMBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
+  var earthRadiusM = 6371000;
+
+  var dLat = degreesToRadians(lat2-lat1);
+  var dLon = degreesToRadians(lon2-lon1);
+
+  lat1 = degreesToRadians(lat1);
+  lat2 = degreesToRadians(lat2);
+
+  var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  return earthRadiusM * c;
+}
 
 const GoogleMap = ({chordData, locationChanged = () => {}, chordClicked=()=>{}, authData, authState}) => {
 
@@ -51,7 +78,8 @@ const GoogleMap = ({chordData, locationChanged = () => {}, chordClicked=()=>{}, 
         features:[]
       }),
       style: (feature) => {
-        return styles[feature.get('type')];
+        if(feature.get('inrange')) return styles['chordMarker'];
+        else return styles['chordMarkerInvalid']
       }
     })
   )
@@ -61,13 +89,14 @@ const GoogleMap = ({chordData, locationChanged = () => {}, chordClicked=()=>{}, 
     setLatLon([pos.coords.latitude,pos.coords.longitude]);
     locationChanged(pos.coords.latitude,pos.coords.longitude);
   });
-
+  const handler = useRef();
   useEffect(() => {
     if(!map || !chordLayer.current) return;
-    map.on('click', (event) => {
+    const func = (event) => {
       map.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
         if(layer === chordLayer.current) {
-          chordClicked(feature.getProperties().params);
+          if(feature.getProperties().inrange)
+            chordClicked(feature.getProperties().params);
           console.log("CHORD clicked!", event.pixel)
           return true;
         }
@@ -75,8 +104,24 @@ const GoogleMap = ({chordData, locationChanged = () => {}, chordClicked=()=>{}, 
         return false;
       
       },{hitTolerance: 8})
+    };
+    map.on('click', func);
+
+    chordLayer.current.getSource().forEachFeature(feature => {
+      const {inrange, params} = feature.getProperties();
+      const {latitude, longitude} = params;
+      const newrange = distanceInMBetweenEarthCoordinates(
+        latLon[0], 
+        latLon[1], 
+        latitude, 
+        longitude) < 165;
+      feature.setProperties({inrange:newrange})
     })
-  }, [map, chordLayer.current])
+
+    return () => {
+      map.un('click', func);
+    }
+  }, [map, chordLayer.current, latLon])
 
   useEffect(() => {
     if(!map) return;
@@ -88,9 +133,20 @@ const GoogleMap = ({chordData, locationChanged = () => {}, chordClicked=()=>{}, 
         params:{...chord}
       })
     })
-    console.log(features);
+    
+    // console.log(features);
     //chordLayer.current.getSource().clear();
     chordLayer.current.getSource().addFeatures(features);
+    chordLayer.current.getSource().forEachFeature(feature => {
+      const {inrange, params} = feature.getProperties();
+      const {latitude, longitude} = params;
+      const newrange = distanceInMBetweenEarthCoordinates(
+        latLon[0], 
+        latLon[1], 
+        latitude, 
+        longitude) < 165;
+      feature.setProperties({inrange:newrange})
+    })
     
     map.render();
   }, [chordData, map])
